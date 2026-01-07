@@ -19,6 +19,10 @@ type model struct {
 func initialModel() model {
 	ti := textinput.New()
 	ti.Placeholder = "Enter URL..."
+	ti.Focus()
+	Ti.CharLimit = 50
+	ti.Width = 30
+
 	return model{
 		count: 0,
 	}
