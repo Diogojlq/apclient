@@ -13,6 +13,7 @@ type model struct {
 	count int
 	width int
 	height int
+  input  textinput.Model
 }
 
 func initialModel() model {
