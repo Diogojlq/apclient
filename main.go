@@ -1,4 +1,4 @@
-package func main()
+package main
 	
 import (
 	"fmt"
