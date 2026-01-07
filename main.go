@@ -17,6 +17,7 @@ type model struct {
 }
 
 func initialModel() model {
+	ti := textinput.New()
 	return model{
 		count: 0,
 	}
