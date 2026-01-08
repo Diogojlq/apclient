@@ -70,7 +70,7 @@ func (m model) View() string {
 	}
 
 	leftWidth := int(float64(m.width) * 0.3) - 2
-
+	rightWidth := int(float64(m.width) * 0.7) - 2
 	mainHeight := m.height - 4
 
 	leftContent := lipgloss.JoinVertical(
@@ -85,7 +85,18 @@ func (m model) View() string {
 		Height(mainHeight).
 		Render(leftContent)
 
-	return lipgloss.JoinHorizontal(lipgloss.Top, leftBox)
+	rightContent := lipgloss.JoinVertical(
+		lipgloss.Left,
+		 "Main Area",
+		 "Status,body,etc",
+	)
+
+	rightBox := boxStyle.
+		Width(rightWidth).
+		Height(mainHeight).
+		Render(rightContent)
+
+	return lipgloss.JoinHorizontal(lipgloss.Top, leftBox, rightBox)
 }
 
 
