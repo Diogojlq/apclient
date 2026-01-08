@@ -64,24 +64,30 @@ var boxStyle = lipgloss.NewStyle().
 	Padding(1, 2)
 
 func (m model) View() string {
-	
+
 	if m.width == 0 || m.height == 0 {
 		return "Loading..."
 	}
 
-	content := lipgloss.JoinVertical(
+	leftWidth := int(float64(m.width) * 0.3) - 2
+
+	mainHeight := m.height - 4
+
+	leftContent := lipgloss.JoinVertical(
 		lipgloss.Left,
-		"API testing",
+		"Side panel",
 		m.input.View(),
 		"↑ / ↓ to change • q to quit",
 	)
 	
-	box := boxStyle.
-		Width(m.width - 4).
-		Height(m.height - 2)
+	leftBox := boxStyle.
+		Width(leftWidth).
+		Height(mainHeight).
+		Render(leftContent)
 
-	return box.Render(content)
+	return lipgloss.JoinHorizontal(lipgloss.Top, leftBox)
 }
+
 
 func main() {
 	p := tea.NewProgram(initialModel())
