@@ -27,7 +27,7 @@ func initialModel() model {
 
 	return model{
 		input: ti,
-		methods:        []string{"GET", "POST", "PUT", "DELETE", "PATCH"},
+		methods:        []string{"GET", "POST", "PUT", "DELETE"},
 		selectedMethod: 0,
 	}
 }
