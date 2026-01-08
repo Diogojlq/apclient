@@ -3,9 +3,10 @@ package main
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
-  "github.com/charmbracelet/bubbles/textinput"
+  	"github.com/charmbracelet/bubbles/textinput"
 	"github.com/charmbracelet/lipgloss"
 )
 
@@ -81,9 +82,21 @@ func (m model) View() string {
 	rightWidth := int(float64(m.width) * 0.7) - 2
 	mainHeight := m.height - 4
 
+	var methodList strings.Builder
+	methodList.WriteString(lipgloss.NewStyle().Bold(true).Render("Method") + "\n\n")
+
+	for i, method := range m.methods {
+		if i == m.selectedMethod {
+			methodList.WriteString(lipgloss.NewStyle().Foreground(lipgloss.Color("205")).Render("> "+method) + "\n")
+		} else {
+			methodList.WriteString(lipgloss.NewStyle().Foreground(lipgloss.Color("240")).Render("  "+method) + "\n")
+		}
+	}
+
 	leftContent := lipgloss.JoinVertical(
 		lipgloss.Left,
 		"Side panel",
+		fmt.Sprintf("Selected Method: %s", m.methods[m.selectedMethod]),
 		m.input.View(),
 		"↑ / ↓ to change • q to quit",
 	)
