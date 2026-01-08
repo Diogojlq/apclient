@@ -64,6 +64,11 @@ var boxStyle = lipgloss.NewStyle().
 	Padding(1, 2)
 
 func (m model) View() string {
+	
+	if m.width == 0 || m.height == 0 {
+		return "Loading..."
+	}
+
 	content := lipgloss.JoinVertical(
 		lipgloss.Left,
 		"API testing",
