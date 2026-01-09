@@ -96,8 +96,10 @@ func (m model) View() string {
 	leftContent := lipgloss.JoinVertical(
 		lipgloss.Left,
 		methodList.String(),
+		"/n",
 		fmt.Sprintf("Selected Method: %s", m.methods[m.selectedMethod]),
 		m.input.View(),
+		"/n",
 		"↑ / ↓ to change • q to quit",
 	)
 	
