@@ -79,7 +79,7 @@ func (m model) View() string {
 	}
 
 	leftWidth := int(float64(m.width) * 0.4) - 2
-	rightWidth := int(float64(m.width) * 0.7) - 2
+	rightWidth := int(float64(m.width) * 0.6) - 2
 	mainHeight := m.height - 4
 
 	var methodList strings.Builder
