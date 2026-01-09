@@ -78,7 +78,7 @@ func (m model) View() string {
 		return "Loading..."
 	}
 
-	leftWidth := int(float64(m.width) * 0.3) - 2
+	leftWidth := int(float64(m.width) * 0.4) - 2
 	rightWidth := int(float64(m.width) * 0.7) - 2
 	mainHeight := m.height - 4
 
