@@ -87,7 +87,7 @@ func (m model) View() string {
 
 	for i, method := range m.methods {
 		if i == m.selectedMethod {
-			methodList.WriteString(lipgloss.NewStyle().Foreground(lipgloss.Color("205")).Render("> "+method) + "\n")
+			methodList.WriteString(lipgloss.NewStyle().Foreground(lipgloss.Color("21")).Render("> "+method) + "\n")
 		} else {
 			methodList.WriteString(lipgloss.NewStyle().Foreground(lipgloss.Color("240")).Render("  "+method) + "\n")
 		}
