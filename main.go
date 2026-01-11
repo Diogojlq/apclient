@@ -19,6 +19,9 @@ type model struct {
 	selectedMethod int
 }
 
+type httpResponseMsg string
+type errorMsg error
+
 func initialModel() model {
 	ti := textinput.New()
 	ti.Placeholder = "Enter URL..."
