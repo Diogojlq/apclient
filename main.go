@@ -17,6 +17,7 @@ type model struct {
   	input   textinput.Model
 	methods []string
 	selectedMethod int
+	responseBody   string
 }
 
 type httpResponseMsg string
