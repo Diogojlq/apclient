@@ -34,6 +34,7 @@ func initialModel() model {
 		input: ti,
 		methods:        []string{"GET", "POST", "PUT", "DELETE"},
 		selectedMethod: 0,
+		responseBody:   "Waiting request...",
 	}
 }
 
