@@ -128,6 +128,10 @@ func (m model) makeRequest() tea.Cmd {
 		method := m.methods[m.selectedMethod]
 		url := m.input.Value()
 
+		if !strings.HasPrefix(url, "http") {
+			url = "http://" + url
+		}
+
 		req, err := http.NewRequest(method, url, nil)
 		if err != nil {
 			return errorMsg(err)
