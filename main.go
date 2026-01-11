@@ -73,13 +73,13 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, m.makeRequest()
 		}
 
-		case httpResponseMsg:
-			m.responseBody = string(msg)
-			return m, nil
+	case httpResponseMsg:
+		m.responseBody = string(msg)
+		return m, nil
 
-		case errorMsg:
-			m.responseBody = "Erro: " + msg.Error()
-			return m, nil
+	case errorMsg:
+		m.responseBody = "Erro: " + msg.Error()
+		return m, nil
 	}
 
   	m.input, cmd = m.input.Update(msg)
