@@ -133,7 +133,8 @@ func (m model) View() string {
 	rightContent := lipgloss.JoinVertical(
 		lipgloss.Left,
 		 lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("42")).Render("RESULT:"),
-		 "Status,body,etc",
+		 "\n",
+		 contentStyle.Render(m.responseBody),
 	)
 
 	rightBox := boxStyle.
