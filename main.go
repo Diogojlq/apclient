@@ -11,6 +11,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
   "github.com/charmbracelet/bubbles/textinput"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/charmbracelet/bubbles/viewport"
 )
 
 type model struct {
