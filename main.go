@@ -49,7 +49,7 @@ func (m model) Init() tea.Cmd {
 }
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	var cmd tea.Cmd
+	var cmds []tea.Cmd
 
 	switch msg := msg.(type) {
   
@@ -57,6 +57,17 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.width = msg.Width
 		m.height = msg.Height
 	
+	  rightWidth := int(float64(m.width)*0.6) - 6 // Ajuste de margem
+    viewHeight := m.height - 10 // Ajuste de margem vertical
+
+    if !m.ready {
+        m.viewport = viewport.New(rightWidth, viewHeight)         
+				m.ready = true 
+		} else {
+        m.viewport.Width = rightWidth
+        m.viewport.Height = viewHeight
+    }
+
 	case tea.KeyMsg:
 
 		switch msg.String() {
@@ -73,11 +84,13 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		case "enter":
 			m.responseBody = "Making request..."
+			m.viewport.SetContent(m.responseBody)
 			return m, m.makeRequest()
 		}
 
 	case httpResponseMsg:
 		m.responseBody = string(msg)
+		m.viewport.SetContent(m.responseBody)
 		return m, nil
 
 	case errorMsg:
@@ -85,8 +98,15 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, nil
 	}
 
-  	m.input, cmd = m.input.Update(msg)
-	return m, cmd
+		var vpCmd tea.Cmd
+    m.viewport, vpCmd = m.viewport.Update(msg)
+    cmds = append(cmds, vpCmd)
+
+    var inputCmd tea.Cmd
+    m.input, inputCmd = m.input.Update(msg)
+    cmds = append(cmds, inputCmd)
+
+    return m, tea.Batch(cmds...)
 }
 
 var boxStyle = lipgloss.NewStyle().
@@ -135,9 +155,9 @@ func (m model) View() string {
 
 	rightContent := lipgloss.JoinVertical(
 		lipgloss.Left,
-		 lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("42")).Render("RESULT:"),
-		 "\n",
-		 contentStyle.Render(m.responseBody),
+		lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("42")).Render("RESULT:"),
+		"\n",
+		m.viewport.View(),
 	)
 
 	rightBox := boxStyle.
