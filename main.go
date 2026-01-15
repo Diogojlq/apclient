@@ -18,10 +18,12 @@ type model struct {
 	count 	int
 	width 	int
 	height 	int
-  	input   textinput.Model
+  input   textinput.Model
 	methods []string
 	selectedMethod int
 	responseBody   string
+	viewport viewport.Model
+  ready    bool
 }
 
 type httpResponseMsg string
