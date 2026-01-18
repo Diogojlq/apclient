@@ -2,28 +2,28 @@ package main
 
 import (
 	"fmt"
-	"os"
-	"strings"
 	"io"
 	"net/http"
+	"os"
+	"strings"
 	"time"
 
-	tea "github.com/charmbracelet/bubbletea"
-  "github.com/charmbracelet/bubbles/textinput"
-	"github.com/charmbracelet/lipgloss"
+	"github.com/charmbracelet/bubbles/textinput"
 	"github.com/charmbracelet/bubbles/viewport"
+	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 )
 
 type model struct {
-	count 	int
-	width 	int
-	height 	int
-  input   textinput.Model
-	methods []string
+	count          int
+	width          int
+	height         int
+	input          textinput.Model
+	methods        []string
 	selectedMethod int
 	responseBody   string
-	viewport viewport.Model
-  ready    bool
+	viewport       viewport.Model
+	ready          bool
 }
 
 type httpResponseMsg string
@@ -37,7 +37,7 @@ func initialModel() model {
 	ti.Width = 30
 
 	return model{
-		input: ti,
+		input:          ti,
 		methods:        []string{"GET", "POST", "PUT", "DELETE"},
 		selectedMethod: 0,
 		responseBody:   "Waiting request...",
@@ -52,21 +52,21 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmds []tea.Cmd
 
 	switch msg := msg.(type) {
-  
+
 	case tea.WindowSizeMsg:
 		m.width = msg.Width
 		m.height = msg.Height
-	
-	  rightWidth := int(float64(m.width)*0.6) - 6 // Ajuste de margem
-    viewHeight := m.height - 10 // Ajuste de margem vertical
 
-    if !m.ready {
-        m.viewport = viewport.New(rightWidth, viewHeight)         
-				m.ready = true 
+		rightWidth := int(float64(m.width)*0.6) - 6 // Ajuste de margem
+		viewHeight := m.height - 10                 // Ajuste de margem vertical
+
+		if !m.ready {
+			m.viewport = viewport.New(rightWidth, viewHeight)
+			m.ready = true
 		} else {
-        m.viewport.Width = rightWidth
-        m.viewport.Height = viewHeight
-    }
+			m.viewport.Width = rightWidth
+			m.viewport.Height = viewHeight
+		}
 
 	case tea.KeyMsg:
 
@@ -75,12 +75,34 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Quit
 
 		case "up":
-			if m.selectedMethod > 0 {
-				m.selectedMethod--
+			if m.input.Focused() {
+				m.viewport.LineUp(1)
+			} else {
+				if m.selectedMethod > 0 {
+					m.selectedMethod--
+				}
 			}
 		case "down":
-			if m.selectedMethod < len(m.methods)-1 {
-				m.selectedMethod++
+			if m.input.Focused() {
+				m.viewport.LineDown(1)
+			} else {
+				if m.selectedMethod < len(m.methods)-1 {
+					m.selectedMethod++
+				}
+			}
+		case "pgup":
+			m.viewport.HalfViewUp()
+		case "pgdown":
+			m.viewport.HalfViewDown()
+		case "home":
+			m.viewport.GotoTop()
+		case "end":
+			m.viewport.GotoBottom()
+		case "tab":
+			if m.input.Focused() {
+				m.input.Blur()
+			} else {
+				m.input.Focus()
 			}
 		case "enter":
 			m.responseBody = "Making request..."
@@ -98,15 +120,15 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, nil
 	}
 
-		var vpCmd tea.Cmd
-    m.viewport, vpCmd = m.viewport.Update(msg)
-    cmds = append(cmds, vpCmd)
+	var vpCmd tea.Cmd
+	m.viewport, vpCmd = m.viewport.Update(msg)
+	cmds = append(cmds, vpCmd)
 
-    var inputCmd tea.Cmd
-    m.input, inputCmd = m.input.Update(msg)
-    cmds = append(cmds, inputCmd)
+	var inputCmd tea.Cmd
+	m.input, inputCmd = m.input.Update(msg)
+	cmds = append(cmds, inputCmd)
 
-    return m, tea.Batch(cmds...)
+	return m, tea.Batch(cmds...)
 }
 
 var boxStyle = lipgloss.NewStyle().
@@ -120,8 +142,8 @@ func (m model) View() string {
 		return "Loading..."
 	}
 
-	leftWidth := int(float64(m.width) * 0.4) - 2
-	rightWidth := int(float64(m.width) * 0.6) - 2
+	leftWidth := int(float64(m.width)*0.4) - 2
+	rightWidth := int(float64(m.width)*0.6) - 2
 	mainHeight := m.height - 4
 
 	var methodList strings.Builder
@@ -141,9 +163,9 @@ func (m model) View() string {
 		"\n",
 		m.input.View(),
 		"\n",
-		"↑ / ↓ to change • q to quit",
+		"↑↓ methods • PgUp/PgDown scroll • Tab focus • q quit",
 	)
-	
+
 	leftBox := boxStyle.
 		Width(leftWidth).
 		Height(mainHeight).
@@ -167,7 +189,7 @@ func (m model) View() string {
 func (m model) makeRequest() tea.Cmd {
 	return func() tea.Msg {
 		client := &http.Client{Timeout: 10 * time.Second}
-		
+
 		method := m.methods[m.selectedMethod]
 		url := m.input.Value()
 
