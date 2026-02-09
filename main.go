@@ -1,6 +1,8 @@
 package main
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -33,8 +35,8 @@ func initialModel() model {
 	ti := textinput.New()
 	ti.Placeholder = "Enter URL..."
 	ti.Focus()
-	ti.CharLimit = 50
-	ti.Width = 30
+	ti.CharLimit = 200
+	ti.Width = 35
 
 	return model{
 		input:          ti,
@@ -117,6 +119,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case errorMsg:
 		m.responseBody = "Erro: " + msg.Error()
+		m.viewport.SetContent(m.responseBody)
 		return m, nil
 	}
 
@@ -186,6 +189,22 @@ func (m model) View() string {
 	return lipgloss.JoinHorizontal(lipgloss.Top, leftBox, rightBox)
 }
 
+func formatResponse(body []byte) string {
+	var jsonData interface{}
+	if err := json.Unmarshal(body, &jsonData); err != nil {
+		return string(body)
+	}
+
+	var prettyJSON bytes.Buffer
+	encoder := json.NewEncoder(&prettyJSON)
+	encoder.SetIndent("", "  ")
+	if err := encoder.Encode(jsonData); err != nil {
+		return string(body)
+	}
+
+	return prettyJSON.String()
+}
+
 func (m model) makeRequest() tea.Cmd {
 	return func() tea.Msg {
 		client := &http.Client{Timeout: 10 * time.Second}
@@ -209,7 +228,8 @@ func (m model) makeRequest() tea.Cmd {
 		defer res.Body.Close()
 
 		body, _ := io.ReadAll(res.Body)
-		return httpResponseMsg(string(body))
+		formatted := formatResponse(body)
+		return httpResponseMsg(formatted)
 	}
 }
 
